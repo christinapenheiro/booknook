@@ -7,11 +7,23 @@ import { Book } from "@/types/book";
 import { Star, BookOpen, Layers, ArrowRight } from "lucide-react";
 
 interface BookCardProps {
-  book: Book;
+  _id: string;
+  book_title: string;
+  author_name: string;
+  category: string;
+  book_image: string;
+  short_description: string;
+  rating: number;
+  copies_left: number;
+  added_by: string;
 }
 
-export default function BookCard({ book }: BookCardProps) {
+export default function BookCard({ book }: {book : BookCardProps}) {
   const [imgError, setImgError] = useState(false);
+  const url = process.env.NEXT_PUBLIC_SERVER_BASE_URL;
+  const imageSrc = book.book_image.startsWith("http")
+    ? book.book_image
+    : `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}${book.book_image}`;
 
   return (
     <div className="group relative bg-white rounded-2xl border border-neutral-200/80 hover:border-[#D99950]/50 shadow-xs hover:shadow-xl hover:shadow-[#D99950]/10 transition-all duration-300 flex flex-col overflow-hidden">
@@ -23,11 +35,17 @@ export default function BookCard({ book }: BookCardProps) {
             <span className="font-serif text-sm font-semibold line-clamp-2 text-neutral-800">
               {book.book_title}
             </span>
-            <span className="text-xs text-neutral-500 mt-1">{book.author_name}</span>
+            <span className="text-xs text-neutral-500 mt-1">
+              {book.author_name}
+            </span>
           </div>
         ) : (
           <Image
-            src={book.book_image}
+            src={imageSrc
+              // book.book_image.startsWith("http")
+              //   ? book.book_image
+              //   : `/${url}${book.book_image}`
+            }
             alt={book.book_title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -55,7 +73,9 @@ export default function BookCard({ book }: BookCardProps) {
         <div className="absolute bottom-2 right-2 z-10">
           <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-neutral-950/70 text-white backdrop-blur-xs">
             <Layers className="w-3 h-3 text-[#D99950]" />
-            {book.copies_left > 0 ? `${book.copies_left} copies left` : "Out of stock"}
+            {book.copies_left > 0
+              ? `${book.copies_left} copies left`
+              : "Out of stock"}
           </span>
         </div>
       </div>

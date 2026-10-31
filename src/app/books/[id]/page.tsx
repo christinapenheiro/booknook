@@ -45,6 +45,7 @@ export default function BookDetailPage({ params }: PageProps) {
 async function BookDetailContent({ params }: PageProps) {
   const { id } = await params;
   const book = await getBookById(id);
+  const url = process.env.NEXT_PUBLIC_SERVER_BASE_URL;
 
   if (!book) {
     notFound();
@@ -77,7 +78,9 @@ async function BookDetailContent({ params }: PageProps) {
             <div className="lg:col-span-5 flex flex-col items-center">
               <div className="relative w-full max-w-sm aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl border border-neutral-200 bg-neutral-100 group">
                 <Image
-                  src={book.book_image}
+                  src={book.book_image.startsWith("http")
+     ? book.book_image
+     : `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}${book.book_image}`}
                   alt={book.book_title}
                   fill
                   priority

@@ -6,13 +6,22 @@ import BookCard from "@/components/BookCard";
 import { Search, SlidersHorizontal, BookOpen, Sparkles, Filter } from "lucide-react";
 
 interface AllBooksClientProps {
-  initialBooks: Book[];
+  _id: string;
+  book_title: string;
+  author_name: string;
+  category: string;
+  book_image: string;
+  short_description: string;
+  rating: number;
+  copies_left: number;
+  added_by: string;
 }
 
-export default function AllBooksClient({ initialBooks }: AllBooksClientProps) {
+export default function AllBooksClient({ initialBooks }:  { initialBooks: AllBooksClientProps[]}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState<"featured" | "rating" | "title" | "copies">("featured");
+
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -22,6 +31,7 @@ export default function AllBooksClient({ initialBooks }: AllBooksClientProps) {
 
   // Filter and sort books
   const filteredBooks = useMemo(() => {
+
     return initialBooks
       .filter((book) => {
         const matchesCat =
@@ -98,7 +108,7 @@ export default function AllBooksClient({ initialBooks }: AllBooksClientProps) {
               <span className="text-xs font-medium text-neutral-500">Sort by:</span>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                 className="px-3 py-2.5 rounded-xl border border-neutral-200 bg-white text-xs sm:text-sm font-medium text-neutral-800 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 outline-none transition-all cursor-pointer"
               >
                 <option value="featured">Featured / Default</option>
