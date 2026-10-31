@@ -16,8 +16,8 @@ import {
   HeartHandshake,
 } from "lucide-react";
 
-export default function HomePage() {
-  const newArrivals = getFirstNBooks(6);
+export default async function HomePage() {
+  const newArrivals = await getFirstNBooks(6);
 
   return (
     <div className="flex flex-col min-h-screen">

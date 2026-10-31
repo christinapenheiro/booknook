@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   description: "Manage the books you have contributed to BookNook.",
 };
 
-export default function MyBooksPage() {
-  const books = getAllBooks();
+export default async function MyBooksPage() {
+  const books = await getAllBooks();
   // Filter books added by user or sample contributed books
   const myBooks = books.slice(0, 4);
 

@@ -11,8 +11,8 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export function generateStaticParams() {
-  const books = getAllBooks();
+export async function generateStaticParams() {
+  const books = await getAllBooks();
   return books.map((book) => ({
     id: book._id,
   }));
@@ -20,7 +20,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const book = getBookById(id);
+  const book = await getBookById(id);
   if (!book) return { title: "Book Not Found | BookNook" };
   return {
     title: `${book.book_title} | BookNook`,
@@ -44,14 +44,14 @@ export default function BookDetailPage({ params }: PageProps) {
 
 async function BookDetailContent({ params }: PageProps) {
   const { id } = await params;
-  const book = getBookById(id);
+  const book = await getBookById(id);
 
   if (!book) {
     notFound();
   }
 
   // Related books from same category
-  const allBooks = getAllBooks();
+  const allBooks = await getAllBooks();
   const relatedBooks = allBooks
     .filter((b) => b._id !== book._id && b.category === book.category)
     .slice(0, 3);

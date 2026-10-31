@@ -3,7 +3,7 @@ export interface Book {
   book_title: string;
   author_name: string;
   category: string;
-  book_image: string;
+  book_image: globalThis.File | null;
   short_description: string;
   rating: number;
   copies_left: number;

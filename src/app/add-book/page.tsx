@@ -9,17 +9,39 @@ export default function AddBookPage() {
     book_title: "",
     author_name: "",
     category: "Fiction",
-    book_image: "",
+    book_image: null as File | null,
     short_description: "",
     rating: "4.5",
-    copies_left: "5",
+    copies_left: "",
     added_by: "Me",
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    const url = "http://localhost:8000/books";
+    if (!url) {
+      console.error("Failed to fetch API because API url is not working.");
+      return;
+    }
+    const data = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== null) {
+        data.append(key, value);
+      }
+    });
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        body: data,
+      });
+      if (!res.ok) {
+        throw new Error("Failed to upload book");
+      }
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Error submiting Form:", error);
+    }
   };
 
   return (
@@ -34,7 +56,8 @@ export default function AddBookPage() {
             Add a New Book
           </h1>
           <p className="text-sm text-neutral-600 mt-2">
-            Contribute to BookNook and share great literature with our growing reading circle.
+            Contribute to BookNook and share great literature with our growing
+            reading circle.
           </p>
         </div>
 
@@ -48,7 +71,9 @@ export default function AddBookPage() {
                 Book Added to BookNook!
               </h3>
               <p className="text-sm text-neutral-600 max-w-md mx-auto">
-                Thank you for contributing <strong>&ldquo;{formData.book_title}&rdquo;</strong>. Other readers can now find and borrow this book.
+                Thank you for contributing{" "}
+                <strong>&ldquo;{formData.book_title}&rdquo;</strong>. Other
+                readers can now find and borrow this book.
               </p>
               <div className="pt-4 flex items-center justify-center gap-4">
                 <Link
@@ -58,19 +83,19 @@ export default function AddBookPage() {
                   View All Books
                 </Link>
                 <button
-                  onClick={() => {
-                    setSubmitted(false);
-                    setFormData({
-                      book_title: "",
-                      author_name: "",
-                      category: "Fiction",
-                      book_image: "",
-                      short_description: "",
-                      rating: "4.5",
-                      copies_left: "5",
-                      added_by: "Me",
-                    });
-                  }}
+                  // onClick={() => {
+                  //   setSubmitted(false);
+                  //   setFormData({
+                  //     book_title: "",
+                  //     author_name: "",
+                  //     category: "Fiction",
+                  //     book_image: ,
+                  //     short_description: "",
+                  //     rating: "4.5",
+                  //     copies_left: "5",
+                  //     added_by: "Me",
+                  //   });
+                  // }}
                   className="px-6 py-3 rounded-xl border border-neutral-200 text-neutral-700 hover:bg-neutral-50 text-sm font-semibold transition-colors"
                 >
                   Add Another Book
@@ -89,7 +114,9 @@ export default function AddBookPage() {
                     required
                     placeholder="e.g. The Midnight Library"
                     value={formData.book_title}
-                    onChange={(e) => setFormData({ ...formData, book_title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, book_title: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 text-sm outline-none transition-all"
                   />
                 </div>
@@ -103,7 +130,9 @@ export default function AddBookPage() {
                     required
                     placeholder="e.g. Matt Haig"
                     value={formData.author_name}
-                    onChange={(e) => setFormData({ ...formData, author_name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, author_name: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 text-sm outline-none transition-all"
                   />
                 </div>
@@ -116,7 +145,9 @@ export default function AddBookPage() {
                   </label>
                   <select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 text-sm outline-none transition-all bg-white"
                   >
                     <option value="Fiction">Fiction</option>
@@ -129,7 +160,7 @@ export default function AddBookPage() {
 
                 <div>
                   <label className="block text-xs font-semibold uppercase text-neutral-700 mb-2">
-                    Initial Copies *
+                    Copies *
                   </label>
                   <input
                     type="number"
@@ -137,7 +168,9 @@ export default function AddBookPage() {
                     max="50"
                     required
                     value={formData.copies_left}
-                    onChange={(e) => setFormData({ ...formData, copies_left: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, copies_left: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 text-sm outline-none transition-all"
                   />
                 </div>
@@ -145,26 +178,38 @@ export default function AddBookPage() {
 
               <div>
                 <label className="block text-xs font-semibold uppercase text-neutral-700 mb-2">
-                  Cover Image URL
+                  Cover Image URL*
                 </label>
                 <input
-                  type="url"
-                  placeholder="https://covers.openlibrary.org/b/isbn/..."
-                  value={formData.book_image}
-                  onChange={(e) => setFormData({ ...formData, book_image: e.target.value })}
+                  type="file"
+                  name="book_image"
+                  accept="image/*"
+                  required
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setFormData({ ...formData, book_image: file });
+                    }
+                  }}
                   className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 text-sm outline-none transition-all"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-semibold uppercase text-neutral-700 mb-2">
-                  Short Description
+                  Short Description*
                 </label>
                 <textarea
                   rows={4}
                   placeholder="A brief overview of the plot, themes, or insights..."
                   value={formData.short_description}
-                  onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
+                  required
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      short_description: e.target.value,
+                    })
+                  }
                   className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 text-sm outline-none transition-all resize-none"
                 />
               </div>
@@ -175,7 +220,7 @@ export default function AddBookPage() {
                   className="w-full py-4 rounded-xl bg-[#D99950] hover:bg-[#c6853a] text-white font-semibold text-sm transition-all shadow-md shadow-[#D99950]/20 flex items-center justify-center gap-2 group"
                 >
                   <BookPlus className="w-5 h-5" />
-                  <span>Publish Book to Library</span>
+                  <span>Add Book</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>

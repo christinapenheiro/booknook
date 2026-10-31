@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description: "Browse the entire BookNook online catalog. Find fiction, science, history, and more to borrow.",
 };
 
-export default function AllBooksPage() {
-  const books = getAllBooks();
+export default async function AllBooksPage() {
+  const books = await getAllBooks();
 
   return (
     <Suspense fallback={<div className="min-h-screen py-20 text-center text-neutral-500">Loading catalog...</div>}>
