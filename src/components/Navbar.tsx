@@ -1,13 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { BookOpen, Bookmark, Library, PlusCircle, LogIn, UserPlus, Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import {
+  BookOpen,
+  LogIn,
+  UserPlus,
+  Menu,
+  X,
+  User,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export default function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -20,6 +34,49 @@ export default function Navbar() {
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
+  };
+
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
+  // Reset image error if user avatar changes
+  useEffect(() => {
+    setImageError(false);
+  }, [user?.image]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Close menus on navigation
+  useEffect(() => {
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+      setDropdownOpen(false);
+      setMobileMenuOpen(false);
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
   };
 
   return (
@@ -49,11 +106,10 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
-                    active
+                  className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${active
                       ? "text-[#D99950] bg-[#D99950]/10 font-semibold"
                       : "text-neutral-600 hover:text-[#D99950] hover:bg-neutral-50"
-                  }`}
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -61,26 +117,121 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Desktop Action Buttons: Login and Register */}
+          {/* Desktop Action Buttons: User Profile / Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 rounded-lg transition-colors flex items-center gap-1.5"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>Login</span>
-            </Link>
-            <Link
-              href="/register"
-              className="px-4 py-2 text-sm font-medium text-white bg-[#D99950] hover:bg-[#c6853a] shadow-sm hover:shadow-md hover:shadow-[#D99950]/25 rounded-lg transition-all flex items-center gap-1.5"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>Register</span>
-            </Link>
+            {user ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full hover:bg-neutral-100/80 transition-all focus:outline-none cursor-pointer border border-neutral-200/80 hover:border-[#D99950]/40"
+                  aria-expanded={dropdownOpen}
+                  aria-haspopup="true"
+                >
+                  {user.image && !imageError ? (
+                    <img
+                      src={user.image}
+                      alt={user.name || "User profile"}
+                      referrerPolicy="no-referrer"
+                      onError={() => setImageError(true)}
+                      className="w-9 h-9 rounded-full object-cover border border-[#D99950]/50 shadow-xs"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#D99950] to-[#E8B67B] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                      {user.name ? (
+                        user.name.charAt(0).toUpperCase()
+                      ) : (
+                        <User className="w-4 h-4" />
+                      )}
+                    </div>
+                  )}
+                  <ChevronDown
+                    className={`w-4 h-4 text-neutral-500 transition-transform duration-200 ${dropdownOpen ? "rotate-180 text-[#D99950]" : ""
+                      }`}
+                  />
+                </button>
+
+                {/* Dropdown Menu */}
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-xl border border-neutral-100 py-2 z-50">
+                    <div className="px-4 py-3 border-b border-neutral-100">
+                      <p className="text-sm font-semibold text-neutral-900 truncate">
+                        {user.name || "Reader"}
+                      </p>
+                      {user.email && (
+                        <p className="text-xs text-neutral-500 truncate mt-0.5">
+                          {user.email}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        href="/profile"
+                        onClick={() => setDropdownOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 transition-colors"
+                      >
+                        <User className="w-4 h-4 text-neutral-500" />
+                        <span>My Profile</span>
+                      </Link>
+                    </div>
+
+                    <div className="border-t border-neutral-100 pt-1">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4 text-rose-500" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-medium text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 rounded-lg transition-colors flex items-center gap-1.5"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Login</span>
+                </Link>
+                <Link
+                  href="/register"
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#D99950] hover:bg-[#c6853a] shadow-sm hover:shadow-md hover:shadow-[#D99950]/25 rounded-lg transition-all flex items-center gap-1.5"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span>Register</span>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          <div className="flex md:hidden items-center gap-2">
+            {user && (
+              <div className="flex items-center">
+                {user.image && !imageError ? (
+                  <img
+                    src={user.image}
+                    alt={user.name || "User profile"}
+                    referrerPolicy="no-referrer"
+                    onError={() => setImageError(true)}
+                    className="w-8 h-8 rounded-full object-cover border border-[#D99950]/50"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#D99950] to-[#E8B67B] text-white flex items-center justify-center font-bold text-xs">
+                    {user.name ? (
+                      user.name.charAt(0).toUpperCase()
+                    ) : (
+                      <User className="w-3.5 h-3.5" />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -103,32 +254,84 @@ export default function Navbar() {
                 key={link.name}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
-                  active
+                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${active
                     ? "text-[#D99950] bg-[#D99950]/10 font-semibold"
                     : "text-neutral-700 hover:text-[#D99950] hover:bg-neutral-50"
-                }`}
+                  }`}
               >
                 {link.name}
               </Link>
             );
           })}
-          <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
-            <Link
-              href="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 rounded-lg text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-[#D99950]/10 hover:text-[#D99950] transition-colors"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMobileMenuOpen(false)}
-              className="w-full text-center py-2.5 rounded-lg text-sm font-medium text-white bg-[#D99950] hover:bg-[#c6853a] transition-colors shadow-sm"
-            >
-              Register
-            </Link>
-          </div>
+
+          {user ? (
+            <div className="pt-4 border-t border-neutral-100 space-y-3">
+              <div className="flex items-center gap-3 px-2 py-1">
+                {user.image && !imageError ? (
+                  <img
+                    src={user.image}
+                    alt={user.name || "User profile"}
+                    referrerPolicy="no-referrer"
+                    onError={() => setImageError(true)}
+                    className="w-10 h-10 rounded-full object-cover border border-[#D99950]/50"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#D99950] to-[#E8B67B] text-white flex items-center justify-center font-bold text-sm">
+                    {user.name ? (
+                      user.name.charAt(0).toUpperCase()
+                    ) : (
+                      <User className="w-5 h-5" />
+                    )}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-neutral-900 truncate">
+                    {user.name || "Reader"}
+                  </p>
+                  {user.email && (
+                    <p className="text-xs text-neutral-500 truncate">
+                      {user.email}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <Link
+                href="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 transition-colors"
+              >
+                <User className="w-4 h-4 text-neutral-500" />
+                <span>My Profile</span>
+              </Link>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors cursor-pointer"
+              >
+                <LogOut className="w-4 h-4 text-rose-500" />
+                <span>Logout</span>
+              </button>
+            </div>
+          ) : (
+            <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 rounded-lg text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-[#D99950]/10 hover:text-[#D99950] transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 rounded-lg text-sm font-medium text-white bg-[#D99950] hover:bg-[#c6853a] transition-colors shadow-sm"
+              >
+                Register
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>
