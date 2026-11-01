@@ -39,13 +39,15 @@ export default function Navbar() {
     return pathname.startsWith(href);
   };
 
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
-  // Reset image error if user avatar changes
-  useEffect(() => {
+  // Reset image error if user avatar changes without triggering infinite effect loops
+  const [prevUserImage, setPrevUserImage] = useState(user?.image);
+  if (user?.image !== prevUserImage) {
+    setPrevUserImage(user?.image);
     setImageError(false);
-  }, [user?.image]);
+  }
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -54,7 +56,7 @@ export default function Navbar() {
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setDropdownOpenPath(null);
+        setDropdownOpenPath((prev) => (prev !== null ? null : prev));
       }
     };
 
@@ -117,7 +119,9 @@ export default function Navbar() {
 
           {/* Desktop Action Buttons: User Profile / Auth Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            {user ? (
+            {isPending ? (
+              <div className="w-10 h-10 rounded-full bg-neutral-200/70 animate-pulse" />
+            ) : user ? (
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
@@ -215,7 +219,9 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <div className="flex md:hidden items-center gap-2">
-            {user && (
+            {isPending ? (
+              <div className="w-8 h-8 rounded-full bg-neutral-200/70 animate-pulse" />
+            ) : user ? (
               <div className="flex items-center">
                 {user.image && !imageError ? (
                   <img
@@ -235,7 +241,7 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
-            )}
+            ) : null}
             <button
               type="button"
               onClick={() =>
@@ -275,7 +281,11 @@ export default function Navbar() {
             );
           })}
 
-          {user ? (
+          {isPending ? (
+            <div className="pt-4 border-t border-neutral-100 flex items-center justify-center py-4">
+              <div className="w-8 h-8 rounded-full bg-neutral-200/70 animate-pulse" />
+            </div>
+          ) : user ? (
             <div className="pt-4 border-t border-neutral-100 space-y-3">
               <div className="flex items-center gap-3 px-2 py-1">
                 {user.image && !imageError ? (

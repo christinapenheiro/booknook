@@ -6,9 +6,11 @@ import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 
 export default function AddBookPage() {
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
-  const url = "http://localhost:8000/books";
+  const serverBaseUrl =
+    process.env.NEXT_PUBLIC_SERVER_BASE_URL || "http://localhost:8000";
+  const url = `${serverBaseUrl}/books`;
   const [formData, setFormData] = useState({
     book_title: "",
     author_name: "",
@@ -33,9 +35,9 @@ export default function AddBookPage() {
         data.append(key, value);
       }
     });
-    data.set("added_by", user?.name ?? "");
-    data.set("email", user?.email ?? "");
-    data.set("date", user?.createdAt?.toISOString() ?? "");
+    data.set("added_by", user?.name || user?.email || "Anonymous");
+    data.set("email", user?.email || "");
+    data.set("date", new Date().toISOString());
     console.log(data)
     try {
       const res = await fetch(url, {

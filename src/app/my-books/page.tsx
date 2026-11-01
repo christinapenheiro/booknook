@@ -1,19 +1,16 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
-import { getAllBooks } from "@/lib/books";
-import { Library, PlusCircle, ArrowRight, BookOpen } from "lucide-react";
+import { Library, PlusCircle } from "lucide-react";
+import MyBooksClient from "./MyBooksClient";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "My Books | BookNook Library",
   description: "Manage the books you have contributed to BookNook.",
 };
 
-export default async function MyBooksPage() {
-  const books = await getAllBooks();
-  // Filter books added by user or sample contributed books
-  const myBooks = books.slice(0, 4);
-
+export default function MyBooksPage() {
   return (
     <div className="min-h-screen bg-neutral-50/50 py-12">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,7 +24,7 @@ export default async function MyBooksPage() {
               My Contributed Books
             </h1>
             <p className="text-sm text-neutral-600 mt-1">
-              Books you have added to the BookNook community collection.
+              Books you have added to the BookNook community collection. Edit or manage their copies and details.
             </p>
           </div>
 
@@ -40,50 +37,7 @@ export default async function MyBooksPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {myBooks.map((book) => (
-            <div
-              key={book._id}
-              className="bg-white rounded-2xl border border-neutral-200 p-5 shadow-xs flex gap-5 items-center hover:border-[#D99950]/50 transition-all"
-            >
-              <div className="relative w-20 h-28 rounded-xl overflow-hidden bg-neutral-100 shrink-0 border border-neutral-200">
-                <Image
-                  src={book.book_image}
-                  alt={book.book_title}
-                  fill
-                  className="object-cover"
-                  sizes="80px"
-                />
-              </div>
-
-              <div className="flex-1 min-w-0 space-y-1">
-                <span className="text-[11px] font-semibold text-[#D99950] uppercase">
-                  {book.category}
-                </span>
-                <h3 className="font-serif font-bold text-base text-neutral-900 truncate">
-                  {book.book_title}
-                </h3>
-                <p className="text-xs text-neutral-500 truncate">{book.author_name}</p>
-
-                <div className="pt-2 text-xs text-neutral-600 flex items-center gap-3">
-                  <span>Copies: <strong>{book.copies_left}</strong></span>
-                  <span>•</span>
-                  <span>Rating: <strong>★ {book.rating}</strong></span>
-                </div>
-
-                <div className="pt-3">
-                  <Link
-                    href={`/books/${book._id}`}
-                    className="text-xs font-semibold text-[#D99950] hover:underline inline-flex items-center gap-1"
-                  >
-                    <span>View Public Page</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <MyBooksClient />
       </div>
     </div>
   );
