@@ -122,80 +122,94 @@ export default function Navbar() {
             {isPending ? (
               <div className="w-10 h-10 rounded-full bg-neutral-200/70 animate-pulse" />
             ) : user ? (
-              <div className="relative" ref={dropdownRef}>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setDropdownOpenPath(dropdownOpen ? null : pathname)
-                  }
-                  className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full hover:bg-neutral-100/80 transition-all focus:outline-none cursor-pointer border border-neutral-200/80 hover:border-[#D99950]/40"
-                  aria-expanded={dropdownOpen}
-                  aria-haspopup="true"
+              <div className="flex items-center gap-2.5">
+                <Link
+                  href="/my-profile"
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                    pathname === "/my-profile"
+                      ? "bg-[#D99950] text-white shadow-xs"
+                      : "bg-neutral-100 hover:bg-[#D99950]/15 text-neutral-700 hover:text-[#D99950] border border-neutral-200/80"
+                  }`}
                 >
-                  {user.image && !imageError ? (
-                    <Image
-                      src={user.image}
-                      width={36}
-                      height={36}
-                      unoptimized
-                      alt={user.name || "User profile"}
-                      referrerPolicy="no-referrer"
-                      onError={() => setImageError(true)}
-                      className="w-9 h-9 rounded-full object-cover border border-brand/50 shadow-xs"
+                  <User className="w-3.5 h-3.5" />
+                  <span>My Profile</span>
+                </Link>
+
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setDropdownOpenPath(dropdownOpen ? null : pathname)
+                    }
+                    className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full hover:bg-neutral-100/80 transition-all focus:outline-none cursor-pointer border border-neutral-200/80 hover:border-[#D99950]/40"
+                    aria-expanded={dropdownOpen}
+                    aria-haspopup="true"
+                  >
+                    {user.image && !imageError ? (
+                      <Image
+                        src={user.image}
+                        width={36}
+                        height={36}
+                        unoptimized
+                        alt={user.name || "User profile"}
+                        referrerPolicy="no-referrer"
+                        onError={() => setImageError(true)}
+                        className="w-9 h-9 rounded-full object-cover border border-[#D99950]/50 shadow-xs"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#D99950] to-[#E8B67B] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                        {user.name ? (
+                          user.name.charAt(0).toUpperCase()
+                        ) : (
+                          <User className="w-4 h-4" />
+                        )}
+                      </div>
+                    )}
+                    <ChevronDown
+                      className={`w-4 h-4 text-neutral-500 transition-transform duration-200 ${
+                        dropdownOpen ? "rotate-180 text-[#D99950]" : ""
+                      }`}
                     />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#D99950] to-[#E8B67B] text-white flex items-center justify-center font-bold text-sm shadow-xs">
-                      {user.name ? (
-                        user.name.charAt(0).toUpperCase()
-                      ) : (
-                        <User className="w-4 h-4" />
-                      )}
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {dropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-xl border border-neutral-100 py-2 z-50">
+                      <div className="px-4 py-3 border-b border-neutral-100">
+                        <p className="text-sm font-semibold text-neutral-900 truncate">
+                          {user.name || "Reader"}
+                        </p>
+                        {user.email && (
+                          <p className="text-xs text-neutral-500 truncate mt-0.5">
+                            {user.email}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="py-1">
+                        <Link
+                          href="/my-profile"
+                          onClick={() => setDropdownOpenPath(null)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 transition-colors"
+                        >
+                          <User className="w-4 h-4 text-neutral-500" />
+                          <span>My Profile</span>
+                        </Link>
+                      </div>
+
+                      <div className="border-t border-neutral-100 pt-1">
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
+                        >
+                          <LogOut className="w-4 h-4 text-rose-500" />
+                          <span>Logout</span>
+                        </button>
+                      </div>
                     </div>
                   )}
-                  <ChevronDown
-                    className={`w-4 h-4 text-neutral-500 transition-transform duration-200 ${
-                      dropdownOpen ? "rotate-180 text-[#D99950]" : ""
-                    }`}
-                  />
-                </button>
-
-                {/* Dropdown Menu */}
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white shadow-xl border border-neutral-100 py-2 z-50">
-                    <div className="px-4 py-3 border-b border-neutral-100">
-                      <p className="text-sm font-semibold text-neutral-900 truncate">
-                        {user.name || "Reader"}
-                      </p>
-                      {user.email && (
-                        <p className="text-xs text-neutral-500 truncate mt-0.5">
-                          {user.email}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="py-1">
-                      <Link
-                        href="/profile"
-                        onClick={() => setDropdownOpenPath(null)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 transition-colors"
-                      >
-                        <User className="w-4 h-4 text-neutral-500" />
-                        <span>My Profile</span>
-                      </Link>
-                    </div>
-
-                    <div className="border-t border-neutral-100 pt-1">
-                      <button
-                        type="button"
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
-                      >
-                        <LogOut className="w-4 h-4 text-rose-500" />
-                        <span>Logout</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
             ) : (
               <>
@@ -318,7 +332,7 @@ export default function Navbar() {
               </div>
 
               <Link
-                href="/profile"
+                href="/my-profile"
                 onClick={() => setMobileMenuPath(null)}
                 className="flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 transition-colors"
               >
