@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import {
@@ -18,8 +19,10 @@ import { authClient } from "@/lib/auth-client";
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileMenuPath, setMobileMenuPath] = useState<string | null>(null);
+  const mobileMenuOpen = mobileMenuPath === pathname;
+  const [dropdownOpenPath, setDropdownOpenPath] = useState<string | null>(null);
+  const dropdownOpen = dropdownOpenPath === pathname;
   const [imageError, setImageError] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -51,7 +54,7 @@ export default function Navbar() {
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setDropdownOpen(false);
+        setDropdownOpenPath(null);
       }
     };
 
@@ -61,17 +64,11 @@ export default function Navbar() {
     };
   }, []);
 
-  // Close menus on navigation
-  useEffect(() => {
-    setDropdownOpen(false);
-    setMobileMenuOpen(false);
-  }, [pathname]);
-
   const handleLogout = async () => {
     try {
       await authClient.signOut();
-      setDropdownOpen(false);
-      setMobileMenuOpen(false);
+      setDropdownOpenPath(null);
+      setMobileMenuPath(null);
       router.push("/");
       router.refresh();
     } catch (error) {
@@ -106,10 +103,11 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${active
+                  className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
+                    active
                       ? "text-[#D99950] bg-[#D99950]/10 font-semibold"
                       : "text-neutral-600 hover:text-[#D99950] hover:bg-neutral-50"
-                    }`}
+                  }`}
                 >
                   {link.name}
                 </Link>
@@ -123,18 +121,23 @@ export default function Navbar() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   type="button"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  onClick={() =>
+                    setDropdownOpenPath(dropdownOpen ? null : pathname)
+                  }
                   className="flex items-center gap-2 p-1 pl-1.5 pr-2.5 rounded-full hover:bg-neutral-100/80 transition-all focus:outline-none cursor-pointer border border-neutral-200/80 hover:border-[#D99950]/40"
                   aria-expanded={dropdownOpen}
                   aria-haspopup="true"
                 >
                   {user.image && !imageError ? (
-                    <img
+                    <Image
                       src={user.image}
+                      width={36}
+                      height={36}
+                      unoptimized
                       alt={user.name || "User profile"}
                       referrerPolicy="no-referrer"
                       onError={() => setImageError(true)}
-                      className="w-9 h-9 rounded-full object-cover border border-[#D99950]/50 shadow-xs"
+                      className="w-9 h-9 rounded-full object-cover border border-brand/50 shadow-xs"
                     />
                   ) : (
                     <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#D99950] to-[#E8B67B] text-white flex items-center justify-center font-bold text-sm shadow-xs">
@@ -146,8 +149,9 @@ export default function Navbar() {
                     </div>
                   )}
                   <ChevronDown
-                    className={`w-4 h-4 text-neutral-500 transition-transform duration-200 ${dropdownOpen ? "rotate-180 text-[#D99950]" : ""
-                      }`}
+                    className={`w-4 h-4 text-neutral-500 transition-transform duration-200 ${
+                      dropdownOpen ? "rotate-180 text-[#D99950]" : ""
+                    }`}
                   />
                 </button>
 
@@ -168,7 +172,7 @@ export default function Navbar() {
                     <div className="py-1">
                       <Link
                         href="/profile"
-                        onClick={() => setDropdownOpen(false)}
+                        onClick={() => setDropdownOpenPath(null)}
                         className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 transition-colors"
                       >
                         <User className="w-4 h-4 text-neutral-500" />
@@ -234,11 +238,17 @@ export default function Navbar() {
             )}
             <button
               type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              onClick={() =>
+                setMobileMenuPath(mobileMenuOpen ? null : pathname)
+              }
               className="p-2 rounded-lg text-neutral-700 hover:text-[#D99950] hover:bg-neutral-100 focus:outline-none"
               aria-label="Toggle navigation menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -253,11 +263,12 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${active
+                onClick={() => setMobileMenuPath(null)}
+                className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
+                  active
                     ? "text-[#D99950] bg-[#D99950]/10 font-semibold"
                     : "text-neutral-700 hover:text-[#D99950] hover:bg-neutral-50"
-                  }`}
+                }`}
               >
                 {link.name}
               </Link>
@@ -298,7 +309,7 @@ export default function Navbar() {
 
               <Link
                 href="/profile"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => setMobileMenuPath(null)}
                 className="flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-700 hover:text-[#D99950] hover:bg-[#D99950]/10 transition-colors"
               >
                 <User className="w-4 h-4 text-neutral-500" />
@@ -318,14 +329,14 @@ export default function Navbar() {
             <div className="pt-4 border-t border-neutral-100 flex flex-col gap-2">
               <Link
                 href="/login"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => setMobileMenuPath(null)}
                 className="w-full text-center py-2.5 rounded-lg text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-[#D99950]/10 hover:text-[#D99950] transition-colors"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => setMobileMenuPath(null)}
                 className="w-full text-center py-2.5 rounded-lg text-sm font-medium text-white bg-[#D99950] hover:bg-[#c6853a] transition-colors shadow-sm"
               >
                 Register
