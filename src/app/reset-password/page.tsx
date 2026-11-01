@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, Suspense, useEffect } from "react";
 import { BookOpen, KeyRound, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -24,22 +25,33 @@ function ResetPasswordForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if(!token) return;
+    if (!token) {
+      toast.error("Invalid or missing reset token.");
+      return;
+    }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
+      const msg = "Password must be at least 6 characters long.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
     if (!/[A-Z]/.test(password)) {
-      setError("Password must contain at least one uppercase letter.");
+      const msg = "Password must contain at least one uppercase letter.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
     if (!/[a-z]/.test(password)) {
-      setError("Password must contain at least one lowercase letter.");
+      const msg = "Password must contain at least one lowercase letter.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      const msg = "Passwords do not match.";
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
@@ -51,14 +63,18 @@ function ResetPasswordForm() {
       });
 
       if (resetErr) {
-        setError(resetErr.message || "Failed to reset password. The link may have expired.");
+        const msg = resetErr.message || "Failed to reset password. The link may have expired.";
+        setError(msg);
+        toast.error(msg);
       } else {
         setIsSuccess(true);
+        toast.success("Password reset complete! You can now sign in.");
       }
     } catch (err: unknown) {
-      setError(
-        err instanceof Error ? err.message : "An error occurred. Please try again."
-      );
+      const msg =
+        err instanceof Error ? err.message : "An error occurred. Please try again.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

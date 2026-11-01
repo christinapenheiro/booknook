@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UploadedBook } from "@/types/uploadedBook";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 import {
   Pencil,
   Trash2,
@@ -232,13 +233,14 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
       );
 
       setEditingBook(null);
+      toast.success(`"${finalBook.book_title}" updated successfully!`);
       router.refresh();
 
       // Background re-fetch to ensure complete sync with database
       await refreshBooks();
     } catch (error) {
       console.error("Error updating book:", error);
-      alert("Failed to update book. Please try again.");
+      toast.error("Failed to update book. Please try again.");
     } finally {
       setIsUpdating(false);
     }
@@ -249,6 +251,7 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
     if (!deletingBook) return;
 
     setIsDeleting(true);
+    const bookTitle = deletingBook.book_title;
     try {
       const res = await fetch(`${serverBaseUrl}/books/${deletingBook._id}`, {
         method: "DELETE",
@@ -263,12 +266,13 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
         prev.filter((b) => String(b._id) !== String(deletingBook._id))
       );
       setDeletingBook(null);
+      toast.success(`"${bookTitle}" deleted successfully.`);
       router.refresh();
 
       await refreshBooks();
     } catch (error) {
       console.error("Error deleting book:", error);
-      alert("Failed to delete book. Please try again.");
+      toast.error("Failed to delete book. Please try again.");
     } finally {
       setIsDeleting(false);
     }

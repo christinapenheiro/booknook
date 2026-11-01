@@ -15,6 +15,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -69,12 +70,14 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await authClient.signOut();
+      toast.success("Logged out successfully.");
       setDropdownOpenPath(null);
       setMobileMenuPath(null);
       router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Sign out error:", error);
+      toast.error("Failed to sign out. Please try again.");
     }
   };
 

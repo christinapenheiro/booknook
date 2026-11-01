@@ -16,6 +16,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 interface BookDetailActionsProps {
   book: Book;
@@ -99,6 +100,7 @@ export default function BookDetailActions({ book }: BookDetailActionsProps) {
   const handleBorrow = async () => {
     if (!userEmail) {
       setErrorMessage("Please sign in to borrow books.");
+      toast.error("Please sign in to borrow books.");
       return;
     }
 
@@ -138,6 +140,7 @@ export default function BookDetailActions({ book }: BookDetailActionsProps) {
         setAvailableCopies((prev) => Math.max(0, prev - 1));
       }
       setShowModal(false);
+      toast.success(`Successfully borrowed "${book.book_title}"!`);
 
       // Refresh server components to re-fetch updated copies_left from MongoDB
       router.refresh();
@@ -145,6 +148,7 @@ export default function BookDetailActions({ book }: BookDetailActionsProps) {
       const msg =
         err instanceof Error ? err.message : "Failed to borrow book.";
       setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsBorrowing(false);
     }

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 import {
   User,
   Mail,
@@ -73,12 +74,16 @@ export default function MyProfilePage() {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      setErrorMessage("Please select a valid image file (PNG, JPG, WebP).");
+      const msg = "Please select a valid image file (PNG, JPG, WebP).";
+      setErrorMessage(msg);
+      toast.error(msg);
       return;
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      setErrorMessage("Image file size should be less than 2MB.");
+      const msg = "Image file size should be less than 2MB.";
+      setErrorMessage(msg);
+      toast.error(msg);
       return;
     }
 
@@ -89,6 +94,7 @@ export default function MyProfilePage() {
         setUrlInput("");
         setImageError(false);
         setErrorMessage(null);
+        toast.info("Image loaded! Click 'Save Changes' to update your profile.");
       }
     };
     reader.readAsDataURL(file);
@@ -99,6 +105,7 @@ export default function MyProfilePage() {
     setImage(urlInput.trim());
     setImageError(false);
     setErrorMessage(null);
+    toast.info("Avatar URL set. Click 'Save Changes' to update your profile.");
   };
 
   const handleSelectPreset = (url: string) => {
@@ -112,6 +119,7 @@ export default function MyProfilePage() {
     e.preventDefault();
     if (!name.trim()) {
       setErrorMessage("Please provide a name.");
+      toast.error("Please provide a name.");
       return;
     }
 
@@ -130,6 +138,7 @@ export default function MyProfilePage() {
       }
 
       setSuccessMessage("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
 
       if (refetch) {
         await refetch();
@@ -144,6 +153,7 @@ export default function MyProfilePage() {
       const msg =
         err instanceof Error ? err.message : "Failed to update profile.";
       setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsSaving(false);
     }

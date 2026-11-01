@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { BookOpen, Mail, ArrowLeft, AlertCircle, CheckCircle2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -30,7 +31,10 @@ export default function ForgotPasswordPage() {
 
     const err = validateEmail(email);
     setEmailError(err);
-    if (err) return;
+    if (err) {
+      toast.error(err);
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -40,15 +44,18 @@ export default function ForgotPasswordPage() {
       });
 
       if (error) {
-        setErrorMessage(error.message || "Failed to send reset link. Please try again.");
+        const msg = error.message || "Failed to send reset link. Please try again.";
+        setErrorMessage(msg);
+        toast.error(msg);
       } else {
         setIsSubmitted(true);
-        console.log("If an account exists, a reset link has been sent.");
+        toast.success("Password reset link sent to your email!");
       }
     } catch (err: unknown) {
-      setErrorMessage(
-        err instanceof Error ? err.message : "An unexpected error occurred. Please try again."
-      );
+      const msg =
+        err instanceof Error ? err.message : "An unexpected error occurred. Please try again.";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

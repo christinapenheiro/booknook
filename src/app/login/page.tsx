@@ -5,6 +5,7 @@ import { BookOpen, LogIn, AlertCircle } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 function GoogleIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -52,16 +53,20 @@ export default function LoginPage() {
       });
 
       if (data) {
+        toast.success("Signed in successfully!");
         router.push("/");
         router.refresh();
       }
       if (error) {
-        setErrorMessage(error.message || "Invalid email or password.");
+        const msg = error.message || "Invalid email or password.";
+        setErrorMessage(msg);
+        toast.error(msg);
       }
     } catch (err: unknown) {
-      setErrorMessage(
-        err instanceof Error ? err.message : "An error occurred during sign in."
-      );
+      const msg =
+        err instanceof Error ? err.message : "An error occurred during sign in.";
+      setErrorMessage(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -76,9 +81,10 @@ export default function LoginPage() {
         callbackURL: "/",
       });
     } catch (err: unknown) {
-      setErrorMessage(
-        err instanceof Error ? err.message : "Failed to sign in with Google."
-      );
+      const msg =
+        err instanceof Error ? err.message : "Failed to sign in with Google.";
+      setErrorMessage(msg);
+      toast.error(msg);
       setIsGoogleLoading(false);
     }
   };

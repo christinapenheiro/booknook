@@ -4,6 +4,7 @@ import { useState } from "react";
 import { BookPlus, Sparkles, Check, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 export default function AddBookPage() {
   const { data: session, isPending } = authClient.useSession();
@@ -48,8 +49,10 @@ export default function AddBookPage() {
         throw new Error("Failed to upload book");
       }
       setSubmitted(true);
+      toast.success(`"${formData.book_title}" added successfully!`);
     } catch (error) {
-      console.error("Error submiting Form:", error);
+      console.error("Error submitting Form:", error);
+      toast.error("Failed to add book. Please try again.");
     }
   };
 

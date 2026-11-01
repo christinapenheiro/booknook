@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { createAuthClient } from "better-auth/react";
+import { toast } from "react-toastify";
 
 function GoogleIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -131,6 +132,7 @@ export default function RegisterPage() {
 
     // If either email or password is invalid, do not register
     if (emailErr || passwordErr) {
+      toast.error(emailErr || passwordErr);
       return;
     }
     setIsSubmitting(true);
@@ -143,11 +145,14 @@ export default function RegisterPage() {
 
     if (error) {
       setIsSubmitting(false);
-      console.log(error)
+      const msg = error.message || "Failed to create account.";
+      toast.error(msg);
+      console.log(error);
       return;
     }
 
     if (data) {
+      toast.success("Account created successfully! Welcome to BookNook.");
       router.push("/");
     }
 
