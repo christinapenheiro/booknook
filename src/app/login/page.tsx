@@ -139,12 +139,18 @@ export default function LoginPage() {
             </div>
 
             <div className="flex items-center justify-end text-xs">
-              <Link
+              {/* <Link
                 href="/forgot-password"
                 className="font-semibold text-[#D99950] hover:underline"
               >
                 Forgot password?
-              </Link>
+              </Link> */}
+
+               {/* currently disabled forget password for checking */}
+              <button disabled className="font-semibold text-[#D99950] hover:underline"
+              >
+                Forgot password?
+              </button>
             </div>
 
             <div className="pt-2">
@@ -154,7 +160,9 @@ export default function LoginPage() {
                 className="w-full py-3.5 px-4 rounded-xl bg-[#D99950] hover:bg-[#c6853a] active:scale-[0.99] text-white font-semibold text-sm transition-all shadow-md shadow-[#D99950]/20 flex items-center justify-center gap-2 text-center cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 <LogIn className="w-4 h-4" />
-                <span>{isLoading ? "Signing in..." : "Sign In to BookNook"}</span>
+                <span>
+                  {isLoading ? "Signing in..." : "Sign In to BookNook"}
+                </span>
               </button>
             </div>
           </form>
@@ -180,7 +188,9 @@ export default function LoginPage() {
           >
             <GoogleIcon className="w-5 h-5" />
             <span>
-              {isGoogleLoading ? "Connecting to Google..." : "Sign in with Google"}
+              {isGoogleLoading
+                ? "Connecting to Google..."
+                : "Sign in with Google"}
             </span>
           </button>
 
