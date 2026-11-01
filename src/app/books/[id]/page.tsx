@@ -7,15 +7,19 @@ import { getBookById, getAllBooks } from "@/lib/books";
 import { Star, ArrowLeft, Layers, ShieldCheck, Clock } from "lucide-react";
 import BookDetailActions from "./BookDetailActions";
 
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateStaticParams() {
-  const books = await getAllBooks();
-  return books.map((book) => ({
-    id: book._id,
-  }));
+function getImageUrl(imageSrc?: string) {
+  if (!imageSrc) return "/placeholder-book.jpg";
+  if (imageSrc.startsWith("http://") || imageSrc.startsWith("https://")) {
+    return imageSrc;
+  }
+  const baseUrl = process.env.NEXT_PUBLIC_SERVER_BASE_URL || "";
+  return `${baseUrl.replace(/\/$/, "")}${imageSrc.startsWith("/") ? "" : "/"}${imageSrc}`;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -45,7 +49,6 @@ export default function BookDetailPage({ params }: PageProps) {
 async function BookDetailContent({ params }: PageProps) {
   const { id } = await params;
   const book = await getBookById(id);
-  const url = process.env.NEXT_PUBLIC_SERVER_BASE_URL;
 
   if (!book) {
     notFound();
@@ -78,9 +81,7 @@ async function BookDetailContent({ params }: PageProps) {
             <div className="lg:col-span-5 flex flex-col items-center">
               <div className="relative w-full max-w-sm aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl border border-neutral-200 bg-neutral-100 group">
                 <Image
-                  src={book.book_image.startsWith("http")
-     ? book.book_image
-     : `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}${book.book_image}`}
+                  src={getImageUrl(book.book_image)}
                   alt={book.book_title}
                   fill
                   priority
@@ -189,7 +190,7 @@ async function BookDetailContent({ params }: PageProps) {
                 >
                   <div className="relative w-16 h-22 rounded-lg overflow-hidden shrink-0 bg-neutral-100 border border-neutral-200">
                     <Image
-                      src={rel.book_image}
+                      src={getImageUrl(rel.book_image)}
                       alt={rel.book_title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform"

@@ -3,15 +3,17 @@ import { UploadedBook } from "@/types/uploadedBook";
 export async function getAllBooks(): Promise<UploadedBook[]> {
   try {
     const apiUrl = process.env.GET_BOOKS_API;
-    if(!apiUrl){
+    if (!apiUrl) {
       throw new Error("GET_BOOKS_API environment variable is not defined.");
     }
-    const res = await fetch (apiUrl);
+    const res = await fetch(apiUrl, {
+      cache: "no-store",
+    });
 
-    if(!res.ok){
+    if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
-    const books: UploadedBook[] = await res.json()
+    const books: UploadedBook[] = await res.json();
     return books;
   } catch (error) {
     console.error("Failed to load books:", error);
@@ -25,6 +27,23 @@ export async function getFirstNBooks(count: number = 6): Promise<UploadedBook[]>
 }
 
 export async function getBookById(id: string): Promise<UploadedBook | undefined> {
-  const books = await getAllBooks();
-  return books.find((book) => book._id === id);
+  try {
+    const apiUrl = process.env.GET_BOOKS_API;
+    if (!apiUrl) {
+      throw new Error("GET_BOOKS_API environment variable is not defined.");
+    }
+    const cleanUrl = apiUrl.replace(/\/$/, "");
+    const res = await fetch(`${cleanUrl}/${id}`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return undefined;
+    }
+    const book: UploadedBook = await res.json();
+    return book || undefined;
+  } catch (error) {
+    console.error(`Failed to load book with id ${id}:`, error);
+    return undefined;
+  }
 }
