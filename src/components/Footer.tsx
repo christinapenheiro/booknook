@@ -1,5 +1,17 @@
 import Link from "next/link";
-import { BookOpen, Heart, Mail, MapPin, Phone, Globe, Share2 } from "lucide-react";
+import {
+  BookOpen,
+  Heart,
+  Mail,
+  MapPin,
+  Phone,
+  Globe,
+  Share2,
+} from "lucide-react";
+import React from "react";
+import { FaGoogle, FaInstagram, FaFacebook } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+
 
 export default function Footer() {
   return (
@@ -23,7 +35,8 @@ export default function Footer() {
             </Link>
 
             <p className="text-sm text-neutral-400 max-w-sm leading-relaxed">
-              BookNook is your friendly digital library built on a simple philosophy:
+              BookNook is your friendly digital library built on a simple
+              philosophy:
               <span className="text-[#D99950] font-medium block mt-1">
                 “Add a book, borrow a book, return a book.”
               </span>
@@ -32,7 +45,7 @@ export default function Footer() {
 
             <div className="pt-2 flex items-center gap-3 text-neutral-400">
               <span className="text-xs">Follow our literary journey:</span>
-              <a
+              {/* <a
                 href="https://twitter.com"
                 target="_blank"
                 rel="noreferrer"
@@ -40,8 +53,8 @@ export default function Footer() {
                 aria-label="Community Globe"
               >
                 <Globe className="w-4 h-4" />
-              </a>
-              <a
+              </a> */}
+              {/* <a
                 href="https://github.com"
                 target="_blank"
                 rel="noreferrer"
@@ -49,7 +62,48 @@ export default function Footer() {
                 aria-label="Share Library"
               >
                 <Share2 className="w-4 h-4" />
-              </a>
+              </a> */}
+              <div className="flex items-center gap-4 rounded-lg p-4 text-white">
+                <a
+                  href="https://google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Google"
+                  className="transition-opacity hover:opacity-80"
+                >
+                  <FaGoogle className="h-4 w-4" />
+                </a>
+
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="transition-opacity hover:opacity-80"
+                >
+                  <FaInstagram className="h-4 w-4" />
+                </a>
+
+                <a
+                  href="https://x.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="X"
+                  className="transition-opacity hover:opacity-80"
+                >
+                  <FaXTwitter className="h-4 w-4" />
+                </a>
+
+                <a
+                  href="https://meta.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Meta"
+                  className="transition-opacity hover:opacity-80"
+                >
+                  <FaFacebook className="h-4 w-4" />
+                </a>
+              </div>
             </div>
           </div>
 
@@ -60,27 +114,42 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-sm text-neutral-400">
               <li>
-                <Link href="/" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/all-books" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/all-books"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   All Books
                 </Link>
               </li>
               <li>
-                <Link href="/add-book" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/add-book"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   Add Book
                 </Link>
               </li>
               <li>
-                <Link href="/my-books" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/my-books"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   My Books
                 </Link>
               </li>
               <li>
-                <Link href="/my-borrows" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/my-borrows"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   My Borrows
                 </Link>
               </li>
@@ -94,22 +163,34 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-sm text-neutral-400">
               <li>
-                <Link href="/all-books?category=Fiction" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/all-books?category=Fiction"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   Fiction & Classics
                 </Link>
               </li>
               <li>
-                <Link href="/all-books?category=Science" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/all-books?category=Science"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   Science & Cosmos
                 </Link>
               </li>
               <li>
-                <Link href="/all-books?category=History" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/all-books?category=History"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   History & Biographies
                 </Link>
               </li>
               <li>
-                <Link href="/all-books?category=Philosophy" className="hover:text-[#D99950] transition-colors">
+                <Link
+                  href="/all-books?category=Philosophy"
+                  className="hover:text-[#D99950] transition-colors"
+                >
                   Philosophy & Ideas
                 </Link>
               </li>
@@ -147,7 +228,9 @@ export default function Footer() {
         <div className="mt-12 pt-8 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
           <p>© 2026 BookNook Library. All rights reserved.</p>
           <p className="flex items-center gap-1">
-            Made with <Heart className="w-3.5 h-3.5 text-[#D99950] fill-[#D99950]" /> for book lovers worldwide
+            Made with{" "}
+            <Heart className="w-3.5 h-3.5 text-[#D99950] fill-[#D99950]" /> for
+            book lovers worldwide
           </p>
         </div>
       </div>

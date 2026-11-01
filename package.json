@@ -20,6 +20,7 @@
     "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-icons": "^5.7.0",
     "react-toastify": "^11.2.0",
     "resend": "^6.37.0",
     "shadcn": "^1.0.0",
