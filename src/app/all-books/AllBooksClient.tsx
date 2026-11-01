@@ -161,7 +161,7 @@ export default function AllBooksClient({ initialBooks }:  { initialBooks: AllBoo
 
         {/* Books Grid */}
         {filteredBooks.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-7">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-7">
             {filteredBooks.map((book) => (
               <BookCard key={book._id} book={book} />
             ))}

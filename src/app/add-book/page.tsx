@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { BookPlus, Sparkles, Check, ArrowRight } from "lucide-react";
 import Link from "next/link";
-
+import { authClient } from "@/lib/auth-client";
 
 export default function AddBookPage() {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  const url = "http://localhost:8000/books";
   const [formData, setFormData] = useState({
     book_title: "",
     author_name: "",
@@ -14,13 +17,12 @@ export default function AddBookPage() {
     short_description: "",
     rating: "4.5",
     copies_left: "",
-    added_by: "Me",
+    added_by: "",
   });
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = "http://localhost:8000/books";
     if (!url) {
       console.error("Failed to fetch API because API url is not working.");
       return;
@@ -31,6 +33,10 @@ export default function AddBookPage() {
         data.append(key, value);
       }
     });
+    data.set("added_by", user?.name ?? "");
+    data.set("email", user?.email ?? "");
+    data.set("date", user?.createdAt?.toISOString() ?? "");
+    console.log(data)
     try {
       const res = await fetch(url, {
         method: "POST",
