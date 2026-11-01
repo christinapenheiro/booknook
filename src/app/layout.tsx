@@ -33,17 +33,17 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white text-neutral-900 selection:bg-[#D99950]/20 selection:text-neutral-900">
-        <Suspense
+      <body className="min-h-screen flex flex-col bg-white text-neutral-900 selection:bg-[#D99950]/20 selection:text-neutral-900">
+        {/* <Suspense
           fallback={
             <div className="h-20 w-full bg-white border-b border-[#D99950]/20" />
           }
-        >
-          <Navbar />
-        </Suspense>
-        <main className="flex-1">{children}</main>
+        > */}
+        <Navbar />
+        {/* </Suspense> */}
+        <main className="flex-1 flex flex-col">{children}</main>
         <Footer />
-        <ToastContainer position="top-right" autoClose={3000} />
+        <ToastContainer></ToastContainer>
       </body>
     </html>
   );
