@@ -328,7 +328,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="block text-xs font-semibold text-neutral-700 uppercase mb-1.5">
-                Image URL*
+                Image URL
               </label>
               <input
                 type="text"
