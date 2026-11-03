@@ -36,7 +36,7 @@ function getImageUrl(imageSrc?: string) {
     return imageSrc;
   }
   const baseUrl =
-    process.env.NEXT_PUBLIC_SERVER_BASE_URL || "http://localhost:8000";
+    process.env.NEXT_PUBLIC_SERVER_BASE_URL as string;
   return `${baseUrl.replace(/\/$/, "")}${
     imageSrc.startsWith("/") ? "" : "/"
   }${imageSrc}`;
@@ -48,7 +48,7 @@ export default function MyBorrowsPage() {
   const userEmail = user?.email || "";
 
   const serverBaseUrl =
-    process.env.NEXT_PUBLIC_SERVER_BASE_URL || "http://localhost:8000";
+    process.env.NEXT_PUBLIC_SERVER_BASE_URL as string;
 
   const [borrows, setBorrows] = useState<BorrowedItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,9 +69,15 @@ export default function MyBorrowsPage() {
 
     const fetchBorrows = async () => {
       try {
+         const { data: bookAdd, error } = await authClient.token();
+         const token = bookAdd?.token;
         const res = await fetch(
           `${serverBaseUrl}/my-borrows?email=${encodeURIComponent(userEmail)}`,
-          { cache: "no-store" }
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
         );
         if (res.ok) {
           const data: BorrowedItem[] = await res.json();
@@ -98,8 +104,13 @@ export default function MyBorrowsPage() {
   const handleReturn = async (id: string, title: string) => {
     setReturningId(id);
     try {
+       const { data: bookAdd, error } = await authClient.token();
+       const token = bookAdd?.token;
       const res = await fetch(`${serverBaseUrl}/my-borrows/return/${id}`, {
         method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
       });
 
       if (res.ok) {

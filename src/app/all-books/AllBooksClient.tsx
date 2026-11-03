@@ -18,6 +18,7 @@ interface AllBooksClientProps {
 }
 
 export default function AllBooksClient({ initialBooks }:  { initialBooks: AllBooksClientProps[]}) {
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortBy, setSortBy] = useState<"featured" | "rating" | "title" | "copies">("featured");

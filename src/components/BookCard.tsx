@@ -1,8 +1,5 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { Book } from "@/types/book";
 import { Star, BookOpen, Layers, ArrowRight } from "lucide-react";
 
@@ -19,7 +16,7 @@ interface BookCardProps {
 }
 
 export default function BookCard({ book }: {book : BookCardProps}) {
-  const [imgError, setImgError] = useState(false);
+  // const [imgError, setImgError] = useState(false);
   const url = process.env.NEXT_PUBLIC_SERVER_BASE_URL;
   const imageSrc = book.book_image.startsWith("http")
     ? book.book_image
@@ -29,17 +26,6 @@ export default function BookCard({ book }: {book : BookCardProps}) {
     <div className="group relative bg-white rounded-2xl border border-neutral-200/80 hover:border-[#D99950]/50 shadow-xs hover:shadow-xl hover:shadow-[#D99950]/10 transition-all duration-300 flex flex-col overflow-hidden">
       {/* Book Cover Image Container */}
       <div className="relative w-full pt-[135%] bg-neutral-100 overflow-hidden">
-        {imgError ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-neutral-50 to-neutral-200 text-neutral-500">
-            <BookOpen className="w-12 h-12 text-[#D99950] mb-2 stroke-[1.5]" />
-            <span className="font-serif text-sm font-semibold line-clamp-2 text-neutral-800">
-              {book.book_title}
-            </span>
-            <span className="text-xs text-neutral-500 mt-1">
-              {book.author_name}
-            </span>
-          </div>
-        ) : (
           <Image
             src={imageSrc
               // book.book_image.startsWith("http")
@@ -49,10 +35,8 @@ export default function BookCard({ book }: {book : BookCardProps}) {
             alt={book.book_title}
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            onError={() => setImgError(true)}
             className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
-        )}
 
         {/* Category Pill Tag */}
         <div className="absolute top-3 left-3 z-10">

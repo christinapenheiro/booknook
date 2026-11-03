@@ -64,11 +64,17 @@ export default function BookDetailActions({ book }: BookDetailActionsProps) {
 
     const checkStatus = async () => {
       try {
+         const { data: bookAdd, error } = await authClient.token();
+         const token = bookAdd?.token;
         const res = await fetch(
           `${serverBaseUrl}/my-borrows/check/${book._id}?email=${encodeURIComponent(
-            userEmail
+            userEmail,
           )}`,
-          { cache: "no-store" }
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
         );
         if (res.ok) {
           const data = await res.json();
@@ -108,10 +114,13 @@ export default function BookDetailActions({ book }: BookDetailActionsProps) {
     setErrorMessage(null);
 
     try {
+       const { data: bookAdd, error } = await authClient.token();
+       const token = bookAdd?.token;
       const res = await fetch(`${serverBaseUrl}/my-borrows/${book._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           email: userEmail,

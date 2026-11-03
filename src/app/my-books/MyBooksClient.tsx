@@ -58,8 +58,7 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
     short_description: "",
     book_image: "",
   });
-  const [editImageFile, setEditImageFile] = useState<File | null>(null);
-  const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Delete modal state
@@ -67,7 +66,7 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const serverBaseUrl =
-    process.env.NEXT_PUBLIC_SERVER_BASE_URL || "http://localhost:8000";
+    process.env.NEXT_PUBLIC_SERVER_BASE_URL as string;
 
   // Fetch user's books from the server /my-books API
   // Using primitive dependencies (isPending, userEmail, userName, serverBaseUrl) prevents infinite loops
@@ -88,12 +87,18 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
     const loadBooks = async () => {
       try {
         const params = new URLSearchParams();
+        const { data, error } = await authClient.token();
+        const token = data?.token;
         if (userEmail) params.set("email", userEmail);
         if (userName) params.set("added_by", userName);
 
         const res = await fetch(
           `${serverBaseUrl}/my-books?${params.toString()}`,
-          { cache: "no-store" }
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          },
         );
 
         if (res.ok) {
@@ -132,10 +137,16 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
       const params = new URLSearchParams();
       if (userEmail) params.set("email", userEmail);
       if (userName) params.set("added_by", userName);
+      const { data: bookAdd, error } = await authClient.token();
+      const token = bookAdd?.token;
 
       const res = await fetch(
         `${serverBaseUrl}/my-books?${params.toString()}`,
-        { cache: "no-store" }
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
       );
       if (res.ok) {
         const data: UploadedBook[] = await res.json();
@@ -158,8 +169,7 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
       short_description: book.short_description || "",
       book_image: book.book_image || "",
     });
-    setEditImageFile(null);
-    setEditImagePreview(null);
+    setPreviewError(false);
   };
 
   // Close modals on Escape key
@@ -181,23 +191,25 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
 
     setIsUpdating(true);
     try {
-      const formData = new FormData();
-      formData.append("book_title", editForm.book_title);
-      formData.append("author_name", editForm.author_name);
-      formData.append("category", editForm.category);
-      formData.append("copies_left", String(editForm.copies_left));
-      formData.append("rating", String(editForm.rating));
-      formData.append("short_description", editForm.short_description);
-
-      if (editImageFile) {
-        formData.append("book_image", editImageFile);
-      } else {
-        formData.append("book_image", editForm.book_image);
-      }
+      const payload = {
+        book_title: editForm.book_title,
+        author_name: editForm.author_name,
+        category: editForm.category,
+        copies_left: Number(editForm.copies_left),
+        rating: Number(editForm.rating),
+        short_description: editForm.short_description,
+        book_image: editForm.book_image.trim(),
+      };
+       const { data: bookAdd, error } = await authClient.token();
+       const token = bookAdd?.token;
 
       const res = await fetch(`${serverBaseUrl}/books/${editingBook._id}`, {
         method: "PUT",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -219,10 +231,7 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
         copies_left: Number(editForm.copies_left),
         rating: Number(editForm.rating),
         short_description: editForm.short_description,
-        book_image:
-          serverUpdatedBook?.book_image ||
-          editImagePreview ||
-          editForm.book_image,
+        book_image: serverUpdatedBook?.book_image || editForm.book_image.trim(),
       };
 
       // Immediately update local state so card reflects changes in 0ms
@@ -253,8 +262,13 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
     setIsDeleting(true);
     const bookTitle = deletingBook.book_title;
     try {
+       const { data: bookAdd, error } = await authClient.token();
+       const token = bookAdd?.token;
       const res = await fetch(`${serverBaseUrl}/books/${deletingBook._id}`, {
         method: "DELETE",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) {
@@ -560,34 +574,45 @@ export default function MyBooksClient({ initialBooks }: MyBooksClientProps) {
 
               <div>
                 <label className="block text-xs font-semibold uppercase text-neutral-700 mb-1.5">
-                  Cover Image
+                  Cover Image URL *
                 </label>
-                <div className="flex items-center gap-4">
-                  <div className="relative w-14 h-18 rounded-lg overflow-hidden border border-neutral-200 bg-neutral-100 shrink-0">
-                    <Image
-                      src={
-                        editImagePreview || getImageUrl(editForm.book_image)
-                      }
-                      alt="Cover preview"
-                      fill
-                      className="object-cover"
-                    />
+                <div className="flex items-start gap-4">
+                  <div className="relative w-16 h-22 rounded-xl overflow-hidden border border-neutral-200 bg-neutral-100 shrink-0 shadow-xs flex items-center justify-center">
+                    {editForm.book_image && !previewError ? (
+                      <Image
+                        src={getImageUrl(editForm.book_image)}
+                        alt="Cover preview"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                        onError={() => setPreviewError(true)}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-1 text-center bg-neutral-50 text-neutral-400">
+                        <BookOpen className="w-6 h-6 text-[#D99950]/80 stroke-[1.5]" />
+                        <span className="text-[9px] text-neutral-400 font-medium mt-1">
+                          {previewError ? "Invalid URL" : "No Preview"}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 space-y-1.5">
                     <input
-                      type="file"
-                      accept="image/*"
+                      type="url"
+                      required
+                      placeholder="https://example.com/cover.jpg"
+                      value={editForm.book_image}
                       onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setEditImageFile(file);
-                          setEditImagePreview(URL.createObjectURL(file));
-                        }
+                        setEditForm({
+                          ...editForm,
+                          book_image: e.target.value,
+                        });
+                        setPreviewError(false);
                       }}
-                      className="w-full text-xs text-neutral-600 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#D99950]/15 file:text-[#D99950] hover:file:bg-[#D99950]/25 cursor-pointer"
+                      className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 text-sm outline-none transition-all placeholder:text-neutral-400"
                     />
-                    <p className="text-[11px] text-neutral-400 mt-1">
-                      Leave empty to keep the existing book cover image.
+                    <p className="text-[11px] text-neutral-500">
+                      Paste a direct image link (HTTPS/HTTP) for the book cover.
                     </p>
                   </div>
                 </div>

@@ -8,15 +8,16 @@ import { toast } from "react-toastify";
 
 export default function AddBookPage() {
   const { data: session, isPending } = authClient.useSession();
+ 
   const user = session?.user;
   const serverBaseUrl =
-    process.env.NEXT_PUBLIC_SERVER_BASE_URL || "http://localhost:8000";
+    process.env.NEXT_PUBLIC_SERVER_BASE_URL as string;
   const url = `${serverBaseUrl}/books`;
   const [formData, setFormData] = useState({
     book_title: "",
     author_name: "",
     category: "Fiction",
-    book_image: null as File | null,
+    book_image: "",
     short_description: "",
     rating: "4.5",
     copies_left: "",
@@ -30,21 +31,39 @@ export default function AddBookPage() {
       console.error("Failed to fetch API because API url is not working.");
       return;
     }
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null) {
-        data.append(key, value);
-      }
-    });
-    data.set("added_by", user?.name || user?.email || "Anonymous");
-    data.set("email", user?.email || "");
-    data.set("date", new Date().toISOString());
-    console.log(data)
+    // const data = new FormData();
+    // Object.entries(formData).forEach(([key, value]) => {
+    //   if (value !== null) {
+    //     data.append(key, value);
+    //   }
+    // });
+    // data.set("added_by", user?.name || user?.email || "Anonymous");
+    // data.set("email", user?.email || "");
+    // data.set("date", new Date().toISOString());
+    // // console.log(data)
+    const payload = {
+      ...formData,
+      added_by: user?.name || user?.email || "Anonymous",
+      email: user?.email || "",
+      date: new Date().toISOString(),
+    };
+
+    const { data: bookAdd, error } = await authClient.token();
+    const token = bookAdd?.token
+
     try {
       const res = await fetch(url, {
         method: "POST",
-        body: data,
+        headers: {
+          "Content-type":"application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
       });
+
+
+      const ff = await res.json()
+      console.log(ff)
       if (!res.ok) {
         throw new Error("Failed to upload book");
       }
@@ -193,15 +212,12 @@ export default function AddBookPage() {
                   Cover Image URL*
                 </label>
                 <input
-                  type="file"
+                  type="url"
                   name="book_image"
-                  accept="image/*"
+                  value={formData.book_image}
                   required
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      setFormData({ ...formData, book_image: file });
-                    }
+                    setFormData({ ...formData, book_image: e.target.value });
                   }}
                   className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:border-[#D99950] focus:ring-2 focus:ring-[#D99950]/20 text-sm outline-none transition-all"
                 />

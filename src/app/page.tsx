@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getFirstNBooks } from "@/lib/books";
+// import { getBooksServer } from "@/lib/books-server";
 import HeroSlider from "@/components/HeroSlider";
 import BookCard from "@/components/BookCard";
 import {
@@ -15,9 +15,11 @@ import {
   Clock,
   HeartHandshake,
 } from "lucide-react";
+import { publicBooks } from "@/lib/public_books";
 
 export default async function HomePage() {
-  const newArrivals = await getFirstNBooks(6);
+  const arrivals = await publicBooks()
+  const newArrivals = arrivals.slice(0, 6);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -35,7 +37,8 @@ export default async function HomePage() {
               How BookNook Works
             </h2>
             <p className="text-sm text-neutral-600 mt-2">
-              Simple, accessible, and community-driven reading experience for everyone.
+              Simple, accessible, and community-driven reading experience for
+              everyone.
             </p>
           </div>
 
@@ -52,7 +55,9 @@ export default async function HomePage() {
                 Add a Book
               </h3>
               <p className="text-sm text-neutral-600 leading-relaxed">
-                Contribute your cherished books to our catalog. Share information, upload cover art, and expand the library shelves for other members.
+                Contribute your cherished books to our catalog. Share
+                information, upload cover art, and expand the library shelves
+                for other members.
               </p>
             </div>
 
@@ -68,7 +73,8 @@ export default async function HomePage() {
                 Borrow a Book
               </h3>
               <p className="text-sm text-neutral-600 leading-relaxed">
-                Found something captivating? Reserve and borrow the book for a few days with one click, completely free of charge.
+                Found something captivating? Reserve and borrow the book for a
+                few days with one click, completely free of charge.
               </p>
             </div>
 
@@ -84,7 +90,8 @@ export default async function HomePage() {
                 Return a Book
               </h3>
               <p className="text-sm text-neutral-600 leading-relaxed">
-                Finished reading? Return the book through your dashboard so the next reader can immerse themselves in the adventure.
+                Finished reading? Return the book through your dashboard so the
+                next reader can immerse themselves in the adventure.
               </p>
             </div>
           </div>
@@ -92,7 +99,10 @@ export default async function HomePage() {
       </section>
 
       {/* 3. New Arrivals Section (First 6 books from API) */}
-      <section id="new-arrivals" className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <section
+        id="new-arrivals"
+        className="py-16 sm:py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+      >
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
@@ -104,7 +114,8 @@ export default async function HomePage() {
               New Arrivals
             </h2>
             <p className="text-neutral-600 text-sm sm:text-base mt-2 max-w-xl">
-              Check out the newest additions to BookNook. Borrow any title to dive straight into your next unforgettable journey.
+              Check out the newest additions to BookNook. Borrow any title to
+              dive straight into your next unforgettable journey.
             </p>
           </div>
 
@@ -134,7 +145,8 @@ export default async function HomePage() {
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1.5 transition-transform" />
           </Link>
           <p className="text-xs text-neutral-500 mt-2.5">
-            Discover all 30+ titles across fiction, science, history, and philosophy
+            Discover all 30+ titles across fiction, science, history, and
+            philosophy
           </p>
         </div>
       </section>
@@ -151,26 +163,36 @@ export default async function HomePage() {
                 A Library Designed Around People, Not Red Tape.
               </h2>
               <p className="text-neutral-300 text-sm sm:text-base leading-relaxed">
-                We believe reading should be frictionless, welcoming, and enriching. Whether you are looking for timeless classics or contemporary breakthroughs, BookNook keeps your reading queue filled.
+                We believe reading should be frictionless, welcoming, and
+                enriching. Whether you are looking for timeless classics or
+                contemporary breakthroughs, BookNook keeps your reading queue
+                filled.
               </p>
 
               <div className="space-y-3 pt-2">
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#D99950] shrink-0 mt-0.5" />
                   <span className="text-sm text-neutral-300">
-                    <strong className="text-white">Instant Online Borrowing:</strong> No complicated library cards or waiting in line.
+                    <strong className="text-white">
+                      Instant Online Borrowing:
+                    </strong>{" "}
+                    No complicated library cards or waiting in line.
                   </span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#D99950] shrink-0 mt-0.5" />
                   <span className="text-sm text-neutral-300">
-                    <strong className="text-white">Community Driven:</strong> Add your favorite titles and see what your neighbors recommend.
+                    <strong className="text-white">Community Driven:</strong>{" "}
+                    Add your favorite titles and see what your neighbors
+                    recommend.
                   </span>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#D99950] shrink-0 mt-0.5" />
                   <span className="text-sm text-neutral-300">
-                    <strong className="text-white">Hassle-Free Returns:</strong> Return books whenever you are ready with transparent tracking.
+                    <strong className="text-white">Hassle-Free Returns:</strong>{" "}
+                    Return books whenever you are ready with transparent
+                    tracking.
                   </span>
                 </div>
               </div>
@@ -197,25 +219,39 @@ export default async function HomePage() {
                 <Compass className="w-8 h-8 text-[#D99950] mb-3" />
                 <h4 className="text-2xl font-bold font-serif text-white">4+</h4>
                 <p className="text-xs text-neutral-400 mt-1">Rich Categories</p>
-                <p className="text-[11px] text-neutral-500 mt-2">Fiction, Science, History & more</p>
+                <p className="text-[11px] text-neutral-500 mt-2">
+                  Fiction, Science, History & more
+                </p>
               </div>
               <div className="p-6 rounded-2xl bg-neutral-800/60 border border-neutral-700/60 backdrop-blur-xs">
                 <ShieldCheck className="w-8 h-8 text-[#D99950] mb-3" />
-                <h4 className="text-2xl font-bold font-serif text-white">100%</h4>
+                <h4 className="text-2xl font-bold font-serif text-white">
+                  100%
+                </h4>
                 <p className="text-xs text-neutral-400 mt-1">Open Access</p>
-                <p className="text-[11px] text-neutral-500 mt-2">Zero subscription fees</p>
+                <p className="text-[11px] text-neutral-500 mt-2">
+                  Zero subscription fees
+                </p>
               </div>
               <div className="p-6 rounded-2xl bg-neutral-800/60 border border-neutral-700/60 backdrop-blur-xs">
                 <Clock className="w-8 h-8 text-[#D99950] mb-3" />
-                <h4 className="text-2xl font-bold font-serif text-white">7 Days</h4>
+                <h4 className="text-2xl font-bold font-serif text-white">
+                  7 Days
+                </h4>
                 <p className="text-xs text-neutral-400 mt-1">Lending Window</p>
-                <p className="text-[11px] text-neutral-500 mt-2">Flexible renewal options</p>
+                <p className="text-[11px] text-neutral-500 mt-2">
+                  Flexible renewal options
+                </p>
               </div>
               <div className="p-6 rounded-2xl bg-neutral-800/60 border border-neutral-700/60 backdrop-blur-xs">
                 <HeartHandshake className="w-8 h-8 text-[#D99950] mb-3" />
-                <h4 className="text-2xl font-bold font-serif text-white">30+</h4>
+                <h4 className="text-2xl font-bold font-serif text-white">
+                  30+
+                </h4>
                 <p className="text-xs text-neutral-400 mt-1">Curated Books</p>
-                <p className="text-[11px] text-neutral-500 mt-2">Constantly updated collection</p>
+                <p className="text-[11px] text-neutral-500 mt-2">
+                  Constantly updated collection
+                </p>
               </div>
             </div>
           </div>

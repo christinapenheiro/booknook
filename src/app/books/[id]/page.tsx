@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { getBookById, getAllBooks } from "@/lib/books";
+import { getBookById, getBooksServer } from "@/lib/books-server";
 import { Star, ArrowLeft, Layers, ShieldCheck, Clock } from "lucide-react";
 import BookDetailActions from "./BookDetailActions";
 
@@ -22,13 +22,17 @@ function getImageUrl(imageSrc?: string) {
   return `${baseUrl.replace(/\/$/, "")}${imageSrc.startsWith("/") ? "" : "/"}${imageSrc}`;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { id } = await params;
   const book = await getBookById(id);
   if (!book) return { title: "Book Not Found | BookNook" };
   return {
     title: `${book.book_title} | BookNook`,
-    description: book.short_description || `Borrow ${book.book_title} by ${book.author_name} at BookNook.`,
+    description:
+      book.short_description ||
+      `Borrow ${book.book_title} by ${book.author_name} at BookNook.`,
   };
 }
 
@@ -55,7 +59,7 @@ async function BookDetailContent({ params }: PageProps) {
   }
 
   // Related books from same category
-  const allBooks = await getAllBooks();
+  const allBooks = await getBooksServer();
   const relatedBooks = allBooks
     .filter((b) => b._id !== book._id && b.category === book.category)
     .slice(0, 3);
@@ -92,11 +96,13 @@ async function BookDetailContent({ params }: PageProps) {
 
               <div className="mt-6 flex items-center justify-center gap-4 text-xs text-neutral-500">
                 <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-[#D99950]" /> Verified Book Edition
+                  <ShieldCheck className="w-4 h-4 text-[#D99950]" /> Verified
+                  Book Edition
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-[#D99950]" /> 7 Days Standard Borrow
+                  <Clock className="w-4 h-4 text-[#D99950]" /> 7 Days Standard
+                  Borrow
                 </span>
               </div>
             </div>
@@ -111,10 +117,16 @@ async function BookDetailContent({ params }: PageProps) {
                   </span>
                   <div className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-neutral-100 text-neutral-800">
                     <Star className="w-3.5 h-3.5 fill-[#D99950] text-[#D99950]" />
-                    <span>{book.rating ? Number(book.rating).toFixed(1) : "4.5"} / 5.0</span>
+                    <span>
+                      {book.rating ? Number(book.rating).toFixed(1) : "4.5"} /
+                      5.0
+                    </span>
                   </div>
                   <span className="text-xs text-neutral-400">
-                    Added by <strong className="text-neutral-700 capitalize">{book.added_by || "Librarian"}</strong>
+                    Added by{" "}
+                    <strong className="text-neutral-700 capitalize">
+                      {book.added_by || "Librarian"}
+                    </strong>
                   </span>
                 </div>
 
@@ -135,17 +147,23 @@ async function BookDetailContent({ params }: PageProps) {
                       <Layers className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-neutral-500">Inventory Status</p>
+                      <p className="text-xs text-neutral-500">
+                        Inventory Status
+                      </p>
                       <p className="text-sm font-semibold text-neutral-900">
-                        {book.copies_left > 0 ? `${book.copies_left} copies available in library` : "Currently all copies borrowed"}
+                        {book.copies_left > 0
+                          ? `${book.copies_left} copies available in library`
+                          : "Currently all copies borrowed"}
                       </p>
                     </div>
                   </div>
-                  <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
-                    book.copies_left > 0
-                      ? "bg-emerald-100 text-emerald-800"
-                      : "bg-amber-100 text-amber-800"
-                  }`}>
+                  <span
+                    className={`text-xs px-2.5 py-1 rounded-full font-semibold ${
+                      book.copies_left > 0
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-amber-100 text-amber-800"
+                    }`}
+                  >
                     {book.copies_left > 0 ? "Available" : "Waitlist"}
                   </span>
                 </div>
@@ -156,7 +174,8 @@ async function BookDetailContent({ params }: PageProps) {
                     About This Book
                   </h3>
                   <p className="text-neutral-600 leading-relaxed text-sm sm:text-base">
-                    {book.short_description || "A wonderful addition to our library collection. Borrow to read the full work."}
+                    {book.short_description ||
+                      "A wonderful addition to our library collection. Borrow to read the full work."}
                   </p>
                 </div>
               </div>
@@ -201,8 +220,12 @@ async function BookDetailContent({ params }: PageProps) {
                     <h4 className="text-sm font-bold font-serif text-neutral-900 group-hover:text-[#D99950] transition-colors truncate">
                       {rel.book_title}
                     </h4>
-                    <p className="text-xs text-[#D99950] truncate">{rel.author_name}</p>
-                    <p className="text-[11px] text-neutral-500 mt-1">{rel.copies_left} copies left</p>
+                    <p className="text-xs text-[#D99950] truncate">
+                      {rel.author_name}
+                    </p>
+                    <p className="text-[11px] text-neutral-500 mt-1">
+                      {rel.copies_left} copies left
+                    </p>
                   </div>
                 </Link>
               ))}
