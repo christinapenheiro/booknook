@@ -1,24 +1,13 @@
-
 import { UploadedBook } from "@/types/uploadedBook";
-import { authClient } from "./auth-client";
-
-
-
 
 
 export async function publicBooks(): Promise<UploadedBook[]> {
   try {
-    //  const { data, error } = await authClient.token();
-    //  const token = data?.token;
     const apiUrl = process.env.GET_BOOKS_API;
     if (!apiUrl) {
       throw new Error("GET_BOOKS_API environment variable is not defined.");
     }
-    const res = await fetch(apiUrl, {
-    //   headers: {
-    //     authorization: `Bearer ${token}`,
-    //   },
-    });
+    const res = await fetch(apiUrl);
 
     if (!res.ok) {
       throw new Error(`HTTP error! Status: ${res.status}`);

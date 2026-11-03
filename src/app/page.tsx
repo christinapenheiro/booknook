@@ -15,7 +15,6 @@ import {
   Clock,
   HeartHandshake,
 } from "lucide-react";
-import { publicBooks } from "@/lib/public_books";
 import { UploadedBook } from "@/types/uploadedBook";
 
 export default async function HomePage() {
