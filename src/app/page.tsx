@@ -16,10 +16,12 @@ import {
   HeartHandshake,
 } from "lucide-react";
 import { publicBooks } from "@/lib/public_books";
+import { UploadedBook } from "@/types/uploadedBook";
 
 export default async function HomePage() {
-  const arrivals = await publicBooks()
-  const newArrivals = arrivals.slice(0, 6);
+  const url = process.env.NEXT_PUBLIC_SERVER_BASE_URL;
+  const arrivals = await fetch(`${url}/featured`);
+  const newArrivals: UploadedBook[] = await arrivals.json();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -130,7 +132,7 @@ export default async function HomePage() {
 
         {/* 6 Books Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 sm:gap-8">
-          {newArrivals.map((book) => (
+          {newArrivals.map((book: UploadedBook) => (
             <BookCard key={book._id} book={book} />
           ))}
         </div>
