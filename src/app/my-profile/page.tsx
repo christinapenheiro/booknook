@@ -458,7 +458,7 @@ export default function MyProfilePage() {
                   )}
 
                   {/* Upload button alternative */}
-                  <div className="flex items-center gap-3 pt-1">
+                  {/* <div className="flex items-center gap-3 pt-1">
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
@@ -479,20 +479,20 @@ export default function MyProfilePage() {
                         Remove Avatar
                       </button>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
               {/* Form Buttons */}
               <div className="pt-4 border-t border-neutral-100 flex items-center justify-between gap-3">
-                <button
+                {/* <button
                   type="button"
                   onClick={handleResetForm}
                   disabled={!hasChanges || isSaving}
                   className="px-5 py-2.5 rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 text-xs font-semibold transition-colors disabled:opacity-40"
                 >
                   Cancel / Revert
-                </button>
+                </button> */}
 
                 <button
                   type="submit"
