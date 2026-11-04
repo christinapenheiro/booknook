@@ -55,14 +55,14 @@ export default function BookCard({ book }: {book : BookCardProps}) {
         </div>
 
         {/* Copies status overlay on hover */}
-        <div className="absolute bottom-2 right-2 z-10">
+        {/* <div className="absolute bottom-2 right-2 z-10">
           <span className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-md bg-neutral-950/70 text-white backdrop-blur-xs">
             <Layers className="w-3 h-3 text-[#D99950]" />
             {book.copies_left > 0
               ? `${book.copies_left} copies left`
               : "Out of stock"}
           </span>
-        </div>
+        </div> */}
       </div>
 
       {/* Book Metadata */}
