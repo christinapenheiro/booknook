@@ -64,7 +64,7 @@ Follow these steps to run BookNook locally.
 **1. Clone the repository**
 
 ```bash
-git clone YOUR_CLIENT_REPOSITORY_URL
+git clone https://github.com/christinapenheiro/booknook
 ```
 
 **2. Navigate to the project directory**
