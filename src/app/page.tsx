@@ -19,7 +19,9 @@ import { UploadedBook } from "@/types/uploadedBook";
 
 export default async function HomePage() {
   const url = process.env.NEXT_PUBLIC_SERVER_BASE_URL;
-  const arrivals = await fetch(`${url}/featured`);
+  const arrivals = await fetch(`${url}/featured`, {
+    cache: "no-store",
+  });
   const newArrivals: UploadedBook[] = await arrivals.json();
 
   return (
