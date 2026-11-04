@@ -200,7 +200,7 @@ export default async function HomePage() {
 
               <div className="pt-4 flex items-center gap-4">
                 <Link
-                  href="/register"
+                  href="/"
                   className="px-6 py-3 rounded-xl bg-[#D99950] hover:bg-[#c6853a] text-white font-semibold text-sm transition-all shadow-md shadow-[#D99950]/20"
                 >
                   Join the Community

@@ -132,6 +132,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/add-book"
+                  prefetch={false}
                   className="hover:text-[#D99950] transition-colors"
                 >
                   Add Book
@@ -140,6 +141,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/my-books"
+                  prefetch={false}
                   className="hover:text-[#D99950] transition-colors"
                 >
                   My Books
@@ -148,6 +150,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/my-borrows"
+                  prefetch={false}
                   className="hover:text-[#D99950] transition-colors"
                 >
                   My Borrows

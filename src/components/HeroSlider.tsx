@@ -16,6 +16,8 @@ interface Slide {
   primaryCtaLink: string;
   secondaryCtaText: string;
   secondaryCtaLink: string;
+  prefetchP: boolean;
+  prefetchS: boolean;
 }
 
 const slides: Slide[] = [
@@ -25,8 +27,11 @@ const slides: Slide[] = [
     tag: "Welcome to BookNook",
     title: "Add a book, borrow a book,",
     highlight: "return a book.",
-    description: "Your friendly online community library. Explore thousands of captivating titles, borrow easily for your reading week, and return at your own pace.",
+    description:
+      "Your friendly online community library. Explore thousands of captivating titles, borrow easily for your reading week, and return at your own pace.",
     primaryCtaText: "Browse All Books",
+    prefetchP: true,
+    prefetchS: false,
     primaryCtaLink: "/all-books",
     secondaryCtaText: "Add a Book",
     secondaryCtaLink: "/add-book",
@@ -37,7 +42,10 @@ const slides: Slide[] = [
     tag: "Curated Collections",
     title: "Discover Stories That",
     highlight: "Inspire Your World.",
-    description: "From gripping fiction and classic literature to groundbreaking science and histories, find books tailored to curious minds.",
+    description:
+      "From gripping fiction and classic literature to groundbreaking science and histories, find books tailored to curious minds.",
+    prefetchP: true,
+    prefetchS: false,
     primaryCtaText: "Explore New Arrivals",
     primaryCtaLink: "#new-arrivals",
     secondaryCtaText: "Join BookNook",
@@ -49,8 +57,11 @@ const slides: Slide[] = [
     tag: "Seamless Borrowing",
     title: "A Cozy Sanctuary For",
     highlight: "Passionate Readers.",
-    description: "Reserve your next literary adventure in seconds. Keep track of your borrowed books and return them with a single click.",
+    description:
+      "Reserve your next literary adventure in seconds. Keep track of your borrowed books and return them with a single click.",
     primaryCtaText: "View My Borrows",
+    prefetchP: false,
+    prefetchS: true,
     primaryCtaLink: "/my-borrows",
     secondaryCtaText: "Browse Collection",
     secondaryCtaLink: "/all-books",
@@ -61,9 +72,12 @@ const slides: Slide[] = [
     tag: "Community Driven",
     title: "Share Knowledge,",
     highlight: "Expand Horizons.",
-    description: "Contribute to our collective shelves by adding your favorite books. Build a brighter reading circle for everyone.",
+    description:
+      "Contribute to our collective shelves by adding your favorite books. Build a brighter reading circle for everyone.",
     primaryCtaText: "Contribute a Book",
     primaryCtaLink: "/add-book",
+    prefetchP: false,
+    prefetchS: true,
     secondaryCtaText: "Explore Library",
     secondaryCtaLink: "/all-books",
   },
@@ -103,7 +117,9 @@ export default function HeroSlider() {
           <div
             key={slide.id}
             className={`absolute inset-0 transition-opacity duration-4 ease-in-out ${
-              isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+              isActive
+                ? "opacity-100 z-10"
+                : "opacity-0 z-0 pointer-events-none"
             }`}
           >
             {/* Background Image with Zoom Effect */}
@@ -151,6 +167,7 @@ export default function HeroSlider() {
                 <div className="pt-2 flex flex-wrap items-center gap-4">
                   <Link
                     href={slide.primaryCtaLink}
+                    prefetch={slide.prefetchP}
                     className="px-6 py-3.5 rounded-xl bg-[#D99950] hover:bg-[#c6853a] text-white font-semibold text-sm sm:text-base transition-all shadow-lg shadow-[#D99950]/30 hover:shadow-xl hover:shadow-[#D99950]/40 flex items-center gap-2 group"
                   >
                     <span>{slide.primaryCtaText}</span>
@@ -158,6 +175,7 @@ export default function HeroSlider() {
                   </Link>
                   <Link
                     href={slide.secondaryCtaLink}
+                    prefetch={slide.prefetchS}
                     className="px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm sm:text-base backdrop-blur-md transition-all hover:border-white/40"
                   >
                     {slide.secondaryCtaText}
@@ -167,15 +185,21 @@ export default function HeroSlider() {
                 {/* Highlights Counter */}
                 <div className="pt-4 grid grid-cols-3 gap-6 max-w-md border-t border-white/15">
                   <div>
-                    <p className="text-xl sm:text-2xl font-bold text-[#D99950]">30+</p>
+                    <p className="text-xl sm:text-2xl font-bold text-[#D99950]">
+                      30+
+                    </p>
                     <p className="text-xs text-neutral-400">Available Titles</p>
                   </div>
                   <div>
-                    <p className="text-xl sm:text-2xl font-bold text-white">100%</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">
+                      100%
+                    </p>
                     <p className="text-xs text-neutral-400">Free to Borrow</p>
                   </div>
                   <div>
-                    <p className="text-xl sm:text-2xl font-bold text-[#D99950]">24/7</p>
+                    <p className="text-xl sm:text-2xl font-bold text-[#D99950]">
+                      24/7
+                    </p>
                     <p className="text-xs text-neutral-400">Digital Access</p>
                   </div>
                 </div>

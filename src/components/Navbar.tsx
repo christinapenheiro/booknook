@@ -28,11 +28,11 @@ export default function Navbar() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "All Books", href: "/all-books" },
-    { name: "Add Book", href: "/add-book" },
-    { name: "My Books", href: "/my-books" },
-    { name: "My Borrows", href: "/my-borrows" },
+    { name: "Home", href: "/", prefetch: true },
+    { name: "All Books", href: "/all-books", prefetch: true },
+    { name: "Add Book", href: "/add-book", prefetch: false },
+    { name: "My Books", href: "/my-books", prefetch: false },
+    { name: "My Borrows", href: "/my-borrows", prefetch: false },
   ];
 
   const isActive = (href: string) => {
@@ -108,6 +108,7 @@ export default function Navbar() {
                 <Link
                   key={link.name}
                   href={link.href}
+                  prefetch={link.prefetch}
                   className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
                     active
                       ? "text-[#D99950] bg-[#D99950]/10 font-semibold"
@@ -286,6 +287,7 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
+                prefetch={link.prefetch}
                 onClick={() => setMobileMenuPath(null)}
                 className={`block px-4 py-2.5 rounded-lg text-base font-medium ${
                   active

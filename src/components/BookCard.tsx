@@ -26,17 +26,18 @@ export default function BookCard({ book }: {book : BookCardProps}) {
     <div className="group relative bg-white rounded-2xl border border-neutral-200/80 hover:border-[#D99950]/50 shadow-xs hover:shadow-xl hover:shadow-[#D99950]/10 transition-all duration-300 flex flex-col overflow-hidden">
       {/* Book Cover Image Container */}
       <div className="relative w-full pt-[135%] bg-neutral-100 overflow-hidden">
-          <Image
-            src={imageSrc
-              // book.book_image.startsWith("http")
-              //   ? book.book_image
-              //   : `/${url}${book.book_image}`
-            }
-            alt={book.book_title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-          />
+        <Image
+          src={
+            imageSrc
+            // book.book_image.startsWith("http")
+            //   ? book.book_image
+            //   : `/${url}${book.book_image}`
+          }
+          alt={book.book_title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+        />
 
         {/* Category Pill Tag */}
         <div className="absolute top-3 left-3 z-10">
@@ -89,6 +90,7 @@ export default function BookCard({ book }: {book : BookCardProps}) {
         <div className="pt-4 mt-3 border-t border-neutral-100 flex items-center justify-between">
           <Link
             href={`/books/${book._id}`}
+            prefetch={false}
             className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-50 hover:bg-[#D99950] text-neutral-800 hover:text-white font-medium text-sm transition-all border border-neutral-200/70 hover:border-[#D99950] shadow-2xs hover:shadow-md hover:shadow-[#D99950]/20 group/btn"
           >
             <span>View Details</span>
